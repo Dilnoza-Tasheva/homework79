@@ -61,6 +61,21 @@ itemsRouter.put('/:id', imagesUpload.single('image'), async (req, res) => {
             return;
         }
     }
+
+    if (req.body.placeId) {
+        const places = await fileDb.getPlaces();
+        let placeExists = false;
+        for (const place of places) {
+            if (place.id === req.body.placeId) {
+                placeExists = true;
+                break;
+            }
+        }
+        if (!placeExists) {
+            res.status(400).send({ error: "Invalid Place ID!" });
+            return;
+        }
+    }
     const updates: Item = {
         id: req.params.id,
         categoryId: req.body.categoryId || undefined,
@@ -77,6 +92,6 @@ itemsRouter.put('/:id', imagesUpload.single('image'), async (req, res) => {
         return;
     }
     res.send(updatedItem);
-})
+});
 
 export default itemsRouter;
