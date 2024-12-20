@@ -19,4 +19,7 @@ export interface Item {
     name: string;
     description?: string;
     image: string | null;
+    createdAt: string;
 }
+
+export type ItemWithoutId = Omit<Item, 'id'>

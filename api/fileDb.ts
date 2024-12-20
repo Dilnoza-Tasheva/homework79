@@ -1,4 +1,4 @@
-import {Category, CategoryWithoutId, Item, Place} from "./types";
+import {Category, CategoryWithoutId, Item, ItemWithoutId, Place} from "./types";
 import {promises as fs} from 'fs';
 
 const fileName = './db.json';
@@ -56,6 +56,41 @@ const fileDb = {
         data.categories[categoryIndex] = updatedCategory;
         await this.save();
         return updatedCategory;
+    },
+    async getItems() {
+        return data.items.map(({id, name}) => ({id, name}));
+    },
+    async getItemById(id: string) {
+        return data.items.find(item => item.id === id) || null;
+    },
+    async addItem(item: Omit<Item, 'id'>) {
+        const id = crypto.randomUUID();
+        const newItem = { id, ...item };
+        data.items.push(newItem);
+        await this.save();
+        return newItem;
+    },
+    async deleteItem(id: string) {
+        const initialLength = data.items.length;
+        data.items = data.items.filter(item => item.id !== id);
+        await this.save();
+        return initialLength > data.items.length;
+    },
+
+    async updateItem(id: string, updates: ItemWithoutId) {
+        const itemIndex = data.items.findIndex(item => item.id === id);
+        if (itemIndex === -1) {
+            return null;
+        }
+        const item = data.items[itemIndex];
+        const updatedItem = {
+            id: item.id,
+            name: updates.name,
+            description: updates.description !== undefined ? updates.description : item.description,
+        };
+        data.categories[itemIndex] = updatedItem;
+        await this.save();
+        return updatedItem;
     },
     async save() {
         await fs.writeFile(fileName, JSON.stringify(data, null, 2));

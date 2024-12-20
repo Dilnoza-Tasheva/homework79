@@ -3,6 +3,7 @@ import categoriesRouter from "./routers/categories";
 import fileDb from "./fileDb";
 
 import fs = require("fs");
+import itemsRouter from "./routers/items";
 
 const app = express();
 const port = 8000;
@@ -11,6 +12,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.use('/categories', categoriesRouter);
+app.use('/items', itemsRouter);
 
 const run = async () => {
     if (fs.existsSync('./db.json')) {

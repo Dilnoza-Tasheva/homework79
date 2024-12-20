@@ -43,7 +43,7 @@ categoriesRouter.put('/:id', async (req, res) => {
     }
     const updatedCategory = await fileDb.updateCategory(req.params.id, {name: req.body.name, description: req.body.description});
     res.send(updatedCategory);
-})
+});
 
 
 export default categoriesRouter;
