@@ -1,4 +1,4 @@
-import {Category, CategoryWithoutId, Item, ItemWithoutId, Place} from "./types";
+import {Category, CategoryWithoutId, Item, ItemWithoutId, Place, PlaceWithoutId} from "./types";
 import {promises as fs} from 'fs';
 
 const fileName = './db.json';
@@ -91,6 +91,47 @@ const fileDb = {
         data.categories[itemIndex] = updatedItem;
         await this.save();
         return updatedItem;
+    },
+    async getPlaces() {
+        return data.places.map(({id, name}) => ({id, name}));
+    },
+    async getPlaceById(id: string) {
+        return data.places.find(place => place.id === id) || null;
+    },
+    async addPlace(place: PlaceWithoutId) {
+        const id = crypto.randomUUID();
+        const newPlace = { id, ...place };
+        data.places.push(newPlace);
+        await this.save();
+        return newPlace;
+    },
+    async deletePlace(id: string) {
+        for (const item of data.items) {
+            if (item.placeId === id) {
+                return false;
+            }
+        }
+        const initialLength = data.places.length;
+        data.places = data.places.filter(place => place.id !== id);
+        await this.save();
+        return initialLength > data.places.length;
+    },
+
+    async updatePlace(id: string, updates: PlaceWithoutId) {
+        const placeIndex = data.places.findIndex(place => place.id === id);
+        if (placeIndex === -1) {
+            return null;
+        }
+
+        const place = data.places[placeIndex];
+        const updatedPlace = {
+            id: place.id,
+            name: updates.name || place.name,
+            description: updates.description !== undefined ? updates.description : place.description,
+        };
+        data.places[placeIndex] = updatedPlace;
+        await this.save();
+        return updatedPlace;
     },
     async save() {
         await fs.writeFile(fileName, JSON.stringify(data, null, 2));

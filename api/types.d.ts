@@ -12,6 +12,8 @@ export interface Place {
     description?: string;
 }
 
+export type PlaceWithoutId = Omit<Place, 'id'>
+
 export interface Item {
     id: string;
     categoryId: string;

@@ -4,6 +4,7 @@ import fileDb from "./fileDb";
 
 import fs = require("fs");
 import itemsRouter from "./routers/items";
+import placesRouter from "./routers/places";
 
 const app = express();
 const port = 8000;
@@ -13,6 +14,7 @@ app.use(express.static('public'));
 
 app.use('/categories', categoriesRouter);
 app.use('/items', itemsRouter);
+app.use('/places', placesRouter);
 
 const run = async () => {
     if (fs.existsSync('./db.json')) {
